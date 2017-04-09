@@ -11,10 +11,10 @@ end
 # Separate dataset to train (70%) and predict (30%)
 dataset.shuffle!
 
-_dataset       = dataset.collect{|d| c = d[0]; d[0] = d[-1]; d[-1] = c; d } #change class and the last feature
+dataset       = dataset.collect{|d| c = d[0]; d[0] = d[-1]; d[-1] = c; d } #change class and the last feature
 
-dataset_train = _dataset[0...(_dataset.size * 0.7)]
-dataset_pred  = _dataset[(_dataset.size * 0.7)..-1]
+dataset_train = dataset[0...(dataset.size * 0.7)]
+dataset_pred  = dataset[(dataset.size * 0.7)..-1]
 
 # Classifier
 

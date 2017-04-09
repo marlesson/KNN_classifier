@@ -137,4 +137,7 @@ end
 #       [feature1, feature2, feature3, ..., featureN, "class2"]
 #     ])
 # 
-# knn.classify([feature1, feature2, feature3, ..., featureN])
+# knn.classify([feature1, feature2, feature3, ..., featureN], K)
+#
+#
+#
