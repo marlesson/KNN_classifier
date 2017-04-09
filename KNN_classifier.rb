@@ -12,9 +12,9 @@ class KNNClassifier
   #   ]
   def initialize(dataset = [], options = {})
     @dataset            = dataset
-    @dataset_normalized = dataset.dup
+    @dataset_normalized = []
 
-    @normalization = options[:normalization] || :linear # linear or standard_deviation
+    @normalization      = options[:normalization] || :linear # linear or standard_deviation
 
     normalize()
   end
@@ -22,22 +22,22 @@ class KNNClassifier
   # This method classify the features, and return de class
   def classify(features, k = 3)
     # # Order by probability
-
     feature_normalized = get_features_normalized(features)
-
+    
     res = @dataset_normalized.sort_by do |features_ds|
       distance(features_ds, feature_normalized)
     end
 
-    return res
+    # Collect class of neighbors
+    res[0...k].collect{|n| n.last }.mode
   end  
 
   # Returns the distance of the characteristics between two objects
   # default: euclidian
   def distance(features1, features2, type = :euclidian)
     sum = 0
-    features1.lenght.times do |i|
-      sum += (features1 - features2)**2
+    count_features.times do |i|
+      sum += (features1[i] - features2[i])**2
     end
 
     Math::sqrt(sum)
@@ -51,8 +51,13 @@ class KNNClassifier
 
   # Normalize dataset 
   def normalize()
-    @dataset_normalized.each do |features|
-      features = get_features_normalized(features)
+    @dataset.each do |features|
+      feature_normalized = get_features_normalized(features)
+
+      # Add class
+      feature_normalized[count_features] = features.last
+
+      @dataset_normalized << feature_normalized
     end
   end
 
@@ -71,22 +76,28 @@ class KNNClassifier
   def normalize_linear(features)
     # [min, max, mean, sd]
     statistics = get_statistics_of_features
+    n_features = []
 
     count_features.times do |fi|
       min, max, mean, sd = statistics[fi]
-      features[fi] = (features[fi]-min).to_f/(max-min)
+      n_features[fi] = (features[fi]-min).to_f/(max-min)
     end
+
+    n_features
   end
 
   # Normalize dataset with a Normalization by standard deviation 
   def normalize_sd(features)
     # [min, max, mean, sd]
     statistics = get_statistics_of_features
-
+    n_features = []
+    
     count_features.times do |fi|
       min, max, mean, sd = statistics[fi]
-      features[fi] = (features[fi]-mean).to_f/(sd)
+      n_features[fi] = (features[fi]-mean).to_f/(sd)
     end
+
+    n_features
   end
 
   # Return the statistics of all features (min, max, mean, sd)
