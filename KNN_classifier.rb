@@ -14,7 +14,7 @@ class KNNClassifier
     @dataset            = dataset
     @dataset_normalized = []
 
-    @normalization      = options[:normalization] || :linear # linear or standard_deviation
+    @normalization      = options[:normalization] || :none # linear or standard_deviation
 
     normalize()
   end
@@ -67,6 +67,8 @@ class KNNClassifier
         normalize_linear(features)
       when :standard_deviation
         normalize_sd(features)
+      when :none
+        features
       else
         raise "Normalization not found"
       end
